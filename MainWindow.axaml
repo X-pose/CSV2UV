@@ -1,0 +1,259 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="800"
+        MinWidth="1024" MinHeight="800"
+        x:Class="UVMapConverter.MainWindow"
+        Title="UV Map Converter" Width="1024" Height="800"
+        Icon="/Assets/icon.ico"
+        RequestedThemeVariant="Light"
+        WindowStartupLocation="CenterScreen">
+        
+
+    <Window.Styles>
+        <Style Selector="Border.dropZone">
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        <Style Selector="Border.settingsPanel">
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        <Style Selector="Border.dropZone:pointerover">
+            <Setter Property="Background" Value="#E8F4FF"/>
+            <Setter Property="BorderBrush" Value="#0078D4"/>
+        </Style>
+
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+    
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        
+        <Style Selector="ComboBoxItem">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        
+        <Style Selector="Button">
+            <Setter Property="Background" Value="#EFEFEF"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        
+        <!-- Override for the Save button to keep its blue color -->
+        <Style Selector="Button#SaveButton">
+            <Setter Property="Background" Value="#0078D4"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </Window.Styles>
+     
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="UV Map to Image Converter" FontSize="24" FontWeight="Bold"/>
+            <TextBlock Text="Drag and drop your CSV file or click to browse" 
+                    FontSize="14" Foreground="#666666" Margin="0,5,0,0"/>
+        </StackPanel>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="400"/>  
+            </Grid.ColumnDefinitions>
+
+            <!-- Drop Zone / Preview Area -->
+            <Border Grid.Column="0" Classes="dropZone" 
+                    Name="DropZone"
+                    DragDrop.AllowDrop="True"
+                    Margin="0,0,20,0">
+                <Panel>
+                    <!-- Drop Zone (visible when no image) -->
+                    <StackPanel Name="DropZoneContent" 
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center"
+                                IsVisible="True">
+                        <PathIcon Data="M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M15,18V16H6V18H15M18,14V12H6V14H18Z"
+                                Width="80" Height="80" 
+                                Foreground="#1D6F42"
+                                HorizontalAlignment="Center"/>
+                        <TextBlock Text="Drop CSV file here" 
+                                FontSize="18" 
+                                Foreground="#999999ff"
+                                HorizontalAlignment="Center"
+                                Margin="0,20,0,10"/>
+                        <TextBlock Text="OR" 
+                                FontSize="18" 
+                                Foreground="#686666ff"
+                                HorizontalAlignment="Center"
+                                Margin="0,10,0,20"/>
+                        <Button Content="Browse Files" 
+                                
+                                Name="BrowseButton"
+                                Background="#004ed5"
+                                Foreground="White"
+                                HorizontalAlignment="Center"
+                                Padding="20,10"/>
+                    </StackPanel>
+
+                    <!-- Preview Area (visible when image loaded) -->
+                    <ScrollViewer Name="PreviewScroller" IsVisible="False">
+                        <Image Name="PreviewImage" Stretch="Uniform"/>
+                    </ScrollViewer>
+                </Panel>
+            </Border>
+
+            <!-- Settings Panel -->
+            <Border Grid.Column="1" 
+                    Background="#F9F9F9" 
+                    CornerRadius="8" 
+                    Padding="20"
+                    Classes="settingsPanel"
+                    >
+
+                <StackPanel Spacing="15">
+                    <TextBlock Text="Settings" FontSize="18" FontWeight="Bold"/>
+                    
+                    <Separator/>
+
+                    <!-- File Info -->
+                    <StackPanel Name="FileInfoPanel" IsVisible="False" Spacing="5">
+                        <TextBlock Text="File Information" FontWeight="SemiBold"/>
+                        <TextBlock Name="FileNameText" TextWrapping="Wrap" FontSize="12"/>
+                        <TextBlock Name="PointCountText" FontSize="12"/>
+                    </StackPanel>
+
+                    <Separator Name="Separator1" IsVisible="False"/>
+
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Image Size -->
+                        <StackPanel Grid.Column="0" Spacing="8" >
+                            <TextBlock Text="Image Size" FontWeight="SemiBold" />
+                            <ComboBox Name="SizeComboBox" SelectedIndex="2" Width="150" HorizontalAlignment="Left">
+                                <ComboBoxItem Content="512 x 512"/>
+                                <ComboBoxItem Content="1024 x 1024"/>
+                                <ComboBoxItem Content="2048 x 2048"/>
+                                <ComboBoxItem Content="4096 x 4096"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Background Color -->
+                        <StackPanel Grid.Column="1" Spacing="8" Margin="15,0,0,0">
+                            <TextBlock Text="Background Color" FontWeight="SemiBold"/>
+                            <ComboBox Name="BackgroundComboBox" SelectedIndex="0" Width="150" HorizontalAlignment="Left">
+                                <ComboBoxItem Content="White"/>
+                                <ComboBoxItem Content="Black"/>
+                                <ComboBoxItem Content="Transparent"/>
+                                <ComboBoxItem Content="Gray"/>
+                            </ComboBox>
+                        </StackPanel>    
+                    </Grid>
+                    
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Line Color -->
+                        <StackPanel Grid.Column="0" Spacing="8" >
+                            <TextBlock Text="Line Color" FontWeight="SemiBold"/>
+                            <ComboBox Name="LineColorComboBox" SelectedIndex="0" Width="150" HorizontalAlignment="Left">
+                                <ComboBoxItem Content="Black"/>
+                                <ComboBoxItem Content="White"/>
+                                <ComboBoxItem Content="Red"/>
+                                <ComboBoxItem Content="Blue"/>
+                                <ComboBoxItem Content="Green"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Export Format -->
+                        <StackPanel Grid.Column="1" Spacing="8" Margin="15,0,0,0">
+                            <TextBlock Text="Export Format" FontWeight="SemiBold"/>
+                            <ComboBox Name="FormatComboBox" SelectedIndex="0" Width="150" HorizontalAlignment="Left">
+                                <ComboBoxItem Content="PNG"/>
+                                <ComboBoxItem Content="JPEG"/>
+                                <ComboBoxItem Content="BMP"/>
+                                <ComboBoxItem Content="WEBP"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Line Thickness -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Line Thickness" FontWeight="SemiBold"/>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Slider Name="ThicknessSlider" 
+                                    Minimum="1" Maximum="10" 
+                                    Value="2" 
+                                    Width="150"
+                                    TickFrequency="1"
+                                    IsSnapToTickEnabled="True"/>
+                            <TextBlock Name="ThicknessText" Text="2 px" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                    
+
+                    <Separator Name="Separator2" IsVisible="False"/>
+                    <!-- Action Buttons -->
+                    <StackPanel Name="ActionPanel" Spacing="10" IsVisible="False" Margin="0,10,0,0">
+                        <Grid Margin="0,0,0,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="Regenerate Preview" 
+                                    Name="RegenerateButton"
+                                    Width="150"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Center"/>
+                            <Button Grid.Column="1" Content="Save Image" 
+                                    Name="SaveButton"
+                                    Width="150"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Center"
+                                    Background="#0078D4"
+                                    Foreground="White"
+                                    Margin="15,0,0,0"/>
+                        </Grid>
+                        
+                        <Button Content="Clear" 
+                                Name="ClearButton"
+                                Width="200"
+                                HorizontalAlignment="Left"
+                                HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                        
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" 
+                Background="#F0F0F0" 
+                CornerRadius="4" 
+                Padding="10"
+                Margin="0,20,0,0">
+            <TextBlock Name="StatusText" Text="Ready" TextAlignment="Center" FontSize="16" FontWeight="DemiBold"/>
+        </Border>
+    </Grid>
+   
+</Window>
