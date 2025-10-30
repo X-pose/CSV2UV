@@ -3,6 +3,12 @@
              x:Class="UVMapConverter.App"
              RequestedThemeVariant="Default">
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme DensityStyle="Compact">
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Light" Accent="#ffab8b67" AltHigh="White" AltLow="White" AltMedium="White" AltMediumHigh="White" AltMediumLow="White" BaseHigh="Black" BaseLow="#ffffb140" BaseMedium="#ffb6731a" BaseMediumHigh="#ff854900" BaseMediumLow="#ff9d5e0d" ChromeAltLow="#ff854900" ChromeBlackHigh="Black" ChromeBlackLow="#ffffb140" ChromeBlackMedium="#ff854900" ChromeBlackMediumLow="#ffb6731a" ChromeDisabledHigh="#ffffb140" ChromeDisabledLow="#ffb6731a" ChromeGray="#ff9d5e0d" ChromeHigh="#ffffb140" ChromeLow="#ffffe1ac" ChromeMedium="#ffffd796" ChromeMediumLow="#ffffe1ac" ChromeWhite="White" ListLow="#ffffd796" ListMedium="#ffffb140" RegionColor="#ff202121" />
+                <ColorPaletteResources x:Key="Dark" Accent="#ffab8b67" AltHigh="Black" AltLow="Black" AltMedium="Black" AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ffffb140" BaseMedium="#ffffd796" BaseMediumHigh="#ffffe1ac" BaseMediumLow="#ffffc46b" ChromeAltLow="#ffffe1ac" ChromeBlackHigh="Black" ChromeBlackLow="#ffffe1ac" ChromeBlackMedium="Black" ChromeBlackMediumLow="Black" ChromeDisabledHigh="#ffffb140" ChromeDisabledLow="#ffffd796" ChromeGray="#ffffce81" ChromeHigh="#ffffce81" ChromeLow="#ff9d5e0d" ChromeMedium="#ffb6731a" ChromeMediumLow="#ffe79c33" ChromeWhite="White" ListLow="#ffb6731a" ListMedium="#ffffb140" RegionColor="#ff202121" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
+
     </Application.Styles>
 </Application>

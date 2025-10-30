@@ -99,8 +99,8 @@ namespace UVMapConverter
             // Python code does: v = 1 - float(data[i][1])
             // This flips the V coordinate
             float x = u * size;
-            float y = (1f - v) * size; // Flip V to match Blender convention
-
+            //float y = (1f - v) * size; // Flip V to match Blender convention
+            float y = v * size; 
             return new SKPoint(x, y);
         }
     }

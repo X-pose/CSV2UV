@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls.PanAndZoom;
 
 namespace UVMapConverter
 {
@@ -15,6 +16,8 @@ namespace UVMapConverter
         private string? _currentCsvPath;
         private UVMapData? _currentUVData;
         private Bitmap? _currentBitmap;
+
+        private string? fileName;
 
         public MainWindow()
         {
@@ -28,7 +31,6 @@ namespace UVMapConverter
             var browseButton = this.FindControl<Button>("BrowseButton");
             var saveButton = this.FindControl<Button>("SaveButton");
             var clearButton = this.FindControl<Button>("ClearButton");
-            var regenerateButton = this.FindControl<Button>("RegenerateButton");
             var thicknessSlider = this.FindControl<Slider>("ThicknessSlider");
             var sizeCombo = this.FindControl<ComboBox>("SizeComboBox");
             var bgCombo = this.FindControl<ComboBox>("BackgroundComboBox");
@@ -49,17 +51,16 @@ namespace UVMapConverter
             if (clearButton != null)
                 clearButton.Click += ClearButton_Click;
 
-            if (regenerateButton != null)
-                regenerateButton.Click += RegenerateButton_Click;
-
             if (thicknessSlider != null)
-                thicknessSlider.PropertyChanged += (s, e) =>
+                thicknessSlider.PropertyChanged += async(s, e) =>
                 {
                     if (e.Property.Name == "Value")
                     {
                         var text = this.FindControl<TextBlock>("ThicknessText");
                         if (text != null)
                             text.Text = $"{(int)thicknessSlider.Value} px";
+                        if (_currentUVData != null)
+                           await RegeneratePreview();
                     }
                 };
 
@@ -122,6 +123,7 @@ namespace UVMapConverter
 
             if (files.Count > 0)
             {
+                fileName = Path.GetFileName(files[0].Path.LocalPath);
                 await ProcessCsvFile(files[0].Path.LocalPath);
             }
         }
@@ -134,22 +136,10 @@ namespace UVMapConverter
                 _currentCsvPath = path;
 
                 _currentUVData = UVMapParser.ParseCsv(path);
-
-                var fileNameText = this.FindControl<TextBlock>("FileNameText");
-                var pointCountText = this.FindControl<TextBlock>("PointCountText");
-
-                if (fileNameText != null)
-                    fileNameText.Text = $"File: {Path.GetFileName(path)}";
-
-                if (pointCountText != null)
-                {
-                    int triangleCount = _currentUVData.Points.Count / 3;
-                    pointCountText.Text = $"Vertices: {_currentUVData.Points.Count} | Triangles: {triangleCount}";
-                }
-
-                ShowFileInfo(true);
+                
+               ShowActionPanel(true);
                 await GenerateAndShowPreview();
-                UpdateStatus($"Loaded {_currentUVData.Points.Count} vertices ({_currentUVData.Points.Count / 3} triangles) | Texture: {_currentUVData.TextureWidth}x{_currentUVData.TextureHeight}");
+                UpdateStatus($" Convertion is done");
             }
             catch (Exception ex)
             {
@@ -165,7 +155,7 @@ namespace UVMapConverter
             var bgColor = GetSelectedBackgroundColor();
             var lineColor = GetSelectedLineColor();
             var thickness = (int)(this.FindControl<Slider>("ThicknessSlider")?.Value ?? 2);
-
+        
             var generator = new ImageGenerator();
             _currentBitmap = await Task.Run(() => 
                 generator.GenerateImage(_currentUVData, size, bgColor, lineColor, thickness));
@@ -175,20 +165,19 @@ namespace UVMapConverter
                 previewImage.Source = _currentBitmap;
 
             var dropZoneContent = this.FindControl<StackPanel>("DropZoneContent");
+            var zoomBorder = this.FindControl<ZoomBorder>("ZoomBorder");
             var previewScroller = this.FindControl<ScrollViewer>("PreviewScroller");
 
             if (dropZoneContent != null)
                 dropZoneContent.IsVisible = false;
+            
+            if (zoomBorder != null)
+                zoomBorder.IsVisible = true;
 
             if (previewScroller != null)
                 previewScroller.IsVisible = true;
 
-            ShowFileInfo(true);
-        }
-
-        private async void RegenerateButton_Click(object? sender, RoutedEventArgs e)
-        {
-            await RegeneratePreview();
+           ShowActionPanel(true);
         }
 
         private async Task RegeneratePreview()
@@ -214,11 +203,11 @@ namespace UVMapConverter
 
             var format = GetSelectedFormat();
             var extension = format.ToLower();
-
+            
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = "Save UV Map Image",
-                SuggestedFileName = $"uvmap.{extension}",
+                SuggestedFileName = $"{fileName}.{extension}",
                 FileTypeChoices = new[]
                 {
                     new FilePickerFileType(format) { Patterns = new[] { $"*.{extension}" } }
@@ -278,21 +267,16 @@ namespace UVMapConverter
             if (previewImage != null)
                 previewImage.Source = null;
 
-            ShowFileInfo(false);
+           ShowActionPanel(false);
             UpdateStatus("Ready");
         }
 
-        private void ShowFileInfo(bool show)
+        private void ShowActionPanel(bool show)
         {
-            var fileInfoPanel = this.FindControl<StackPanel>("FileInfoPanel");
+           
             var actionPanel = this.FindControl<StackPanel>("ActionPanel");
-            var sep1 = this.FindControl<Separator>("Separator1");
-            var sep2 = this.FindControl<Separator>("Separator2");
-
-            if (fileInfoPanel != null) fileInfoPanel.IsVisible = show;
             if (actionPanel != null) actionPanel.IsVisible = show;
-            if (sep1 != null) sep1.IsVisible = show;
-            if (sep2 != null) sep2.IsVisible = show;
+           
         }
 
         private void UpdateStatus(string message, bool isError = false)
@@ -303,7 +287,7 @@ namespace UVMapConverter
                 statusText.Text = message;
                 statusText.Foreground = isError 
                     ? Avalonia.Media.Brushes.Red 
-                    : Avalonia.Media.Brushes.Black;
+                    : Avalonia.Media.Brushes.White;
             }
         }
 
@@ -325,9 +309,9 @@ namespace UVMapConverter
             var combo = this.FindControl<ComboBox>("BackgroundComboBox");
             return combo?.SelectedIndex switch
             {
-                0 => SkiaSharp.SKColors.White,
-                1 => SkiaSharp.SKColors.Black,
-                2 => SkiaSharp.SKColors.Transparent,
+                0 => SkiaSharp.SKColors.Transparent,
+                1 => SkiaSharp.SKColors.White,
+                2 => SkiaSharp.SKColors.Black,
                 3 => SkiaSharp.SKColors.Gray,
                 _ => SkiaSharp.SKColors.White
             };
@@ -338,8 +322,8 @@ namespace UVMapConverter
             var combo = this.FindControl<ComboBox>("LineColorComboBox");
             return combo?.SelectedIndex switch
             {
-                0 => SkiaSharp.SKColors.Black,
-                1 => SkiaSharp.SKColors.White,
+                0 => SkiaSharp.SKColors.White,
+                1 => SkiaSharp.SKColors.Black,
                 2 => SkiaSharp.SKColors.Red,
                 3 => SkiaSharp.SKColors.Blue,
                 4 => SkiaSharp.SKColors.Green,
