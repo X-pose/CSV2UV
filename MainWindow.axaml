@@ -25,7 +25,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="CVS" Foreground="#ffb140" FontSize="24" FontWeight="Bold"/>
+            <TextBlock Grid.Column="0" Text="CSV" Foreground="#ffb140" FontSize="24" FontWeight="Bold"/>
             <TextBlock Grid.Column="1" Text="2" FontSize="24" FontWeight="Bold"/>
             <TextBlock Grid.Column="2" Text="UV" Foreground="#ffb140" FontSize="24" FontWeight="Bold"/>
             </Grid>
