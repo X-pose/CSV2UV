@@ -5,16 +5,13 @@ SV2UV converts DCS ModelViewer2 exported CSV UV data (the UV to file export) dir
 
 This project is based on and inspired by Ettenmure’s [dcs-uv-converter](https://github.com/Ettenmure/dcs-uv-converter/) (which used a Blender add-on). You must attribute Ettenmure for the original approach; CSV2UV reimplements and extends that idea in C# .NET Core and adds features you need.
 
-## Changelog
+## Features
 
-#### v1.0 
-- Initial C# .NET development release.
 - Adjustable line thickness. 
 - Selectable line color. 
 - Selectable background color. 
 - Selectable output image size. 
 - Selectable output format (PNG, BMP, JPG, WEBP).
-
 
 ## Prerequities
 - Windows (recommended) or any OS that can run .NET Core/.NET 8+ executables
@@ -76,7 +73,7 @@ cd CSV2UV
 _Report bugs as Issues with reproduction steps and sample CSV._
 
 ## License & Attribution
-- This project is open source.
+- This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
 
 - You must attribute original concept to **Ettenmure** and link their repository in ACKNOWLEDGEMENTS and the README.
 
