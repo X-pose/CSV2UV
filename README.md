@@ -7,13 +7,11 @@ This project is based on and inspired by Ettenmure’s [dcs-uv-converter](https:
 
 ## Features
 
-- Initial C# .NET development release.
 - Adjustable line thickness. 
 - Selectable line color. 
 - Selectable background color. 
 - Selectable output image size. 
 - Selectable output format (PNG, BMP, JPG, WEBP).
-
 
 ## Prerequities
 - Windows (recommended) or any OS that can run .NET Core/.NET 8+ executables
