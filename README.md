@@ -76,7 +76,7 @@ cd CSV2UV
 _Report bugs as Issues with reproduction steps and sample CSV._
 
 ## License & Attribution
-- This project is open source.
+- This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
 
 - You must attribute original concept to **Ettenmure** and link their repository in ACKNOWLEDGEMENTS and the README.
 
