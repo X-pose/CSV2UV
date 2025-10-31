@@ -18,19 +18,19 @@
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
 
     <!-- Add these lines for single-file publish -->
-    <!-- <PublishSingleFile>true</PublishSingleFile>
+    <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishReadyToRun>true</PublishReadyToRun>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
-    <DebugType>embedded</DebugType> -->
+    <DebugType>embedded</DebugType>
 
     <!-- Optimized settings for smaller size -->
-    <PublishSingleFile>true</PublishSingleFile>
+    <!-- <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract> -->
 
   </PropertyGroup>
 
