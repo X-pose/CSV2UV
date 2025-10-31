@@ -43,9 +43,9 @@ namespace UVMapConverter
 
             var points = uvData.Points;
             
-            // Key insight from Python code:
+            
             // Every 3 consecutive points form ONE triangle face
-            // We draw each triangle independently (no connections between triangles)
+            // We draw each triangle independently
             int triangleCount = points.Count / 3;
 
             for (int i = 0; i < triangleCount; i++)
@@ -96,10 +96,7 @@ namespace UVMapConverter
             float v = Math.Clamp(uv.V, 0f, 1f);
 
             // Convert to pixel coordinates
-            // Python code does: v = 1 - float(data[i][1])
-            // This flips the V coordinate
             float x = u * size;
-            //float y = (1f - v) * size; // Flip V to match Blender convention
             float y = v * size; 
             return new SKPoint(x, y);
         }

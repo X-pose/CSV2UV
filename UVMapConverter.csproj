@@ -2,34 +2,35 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-     <AssemblyName>CSV2UV</AssemblyName>
+    <AssemblyName>CSV2UV</AssemblyName>
     <Product>CSV2UV</Product>
     <Title>CSV2UV</Title>
-    <Version>1.0.0</Version>
-    <Company>by Thathsara</Company>
+    <Version>1.0.1</Version>
+    <Company>Thathsara Thalangama</Company>
+    <Authors>Thathsara Thalangama</Authors>
     <Description>Convert CSV files to UV maps instantly</Description>
-    <Copyright>Copyright © 2025</Copyright>
-    <FileVersion>1.0.0</FileVersion>
-    <InformationalVersion>1.0.0</InformationalVersion>
+    <Copyright>Copyright © 2025 Thathsara</Copyright>
+    <FileVersion>1.0.1</FileVersion>
+    <InformationalVersion>1.0.1</InformationalVersion>
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
 
     <!-- Add these lines for single-file publish -->
-    <PublishSingleFile>true</PublishSingleFile>
+    <!-- <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishReadyToRun>true</PublishReadyToRun>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
-    <DebugType>embedded</DebugType>
+    <DebugType>embedded</DebugType> -->
 
     <!-- Optimized settings for smaller size -->
-    <!-- <PublishSingleFile>true</PublishSingleFile>
+    <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract> -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
   </PropertyGroup>
 

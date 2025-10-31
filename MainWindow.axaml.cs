@@ -110,6 +110,7 @@ namespace UVMapConverter
 
         private async void BrowseButton_Click(object? sender, RoutedEventArgs e)
         {
+            Console.WriteLine("Browse button clicked");
             var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = "Select UV Map CSV File",
@@ -257,6 +258,7 @@ namespace UVMapConverter
             var dropZoneContent = this.FindControl<StackPanel>("DropZoneContent");
             var previewScroller = this.FindControl<ScrollViewer>("PreviewScroller");
             var previewImage = this.FindControl<Image>("PreviewImage");
+            var zoomBorder = this.FindControl<ZoomBorder>("ZoomBorder");
 
             if (dropZoneContent != null)
                 dropZoneContent.IsVisible = true;
@@ -266,6 +268,9 @@ namespace UVMapConverter
 
             if (previewImage != null)
                 previewImage.Source = null;
+                
+            if (zoomBorder != null)
+                zoomBorder.IsVisible = false;
 
            ShowActionPanel(false);
             UpdateStatus("Ready");
