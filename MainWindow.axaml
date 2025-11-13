@@ -114,6 +114,7 @@
                                 <ComboBoxItem Content="1024 x 1024"/>
                                 <ComboBoxItem Content="2048 x 2048"/>
                                 <ComboBoxItem Content="4096 x 4096"/>
+                                <ComboBoxItem Content="8192 x 8192"/>
                             </ComboBox>
                         </StackPanel>
 
@@ -155,6 +156,7 @@
                                 <ComboBoxItem Content="JPEG"/>
                                 <ComboBoxItem Content="BMP"/>
                                 <ComboBoxItem Content="WEBP"/>
+                             
                             </ComboBox>
                         </StackPanel>
                     </Grid>
@@ -173,6 +175,10 @@
                         </StackPanel>
                     </StackPanel>
                     
+                    <!-- Draw vertices option -->
+                    <StackPanel Spacing="8">
+                        <CheckBox Name="DrawVerticesCheckBox" Content="Draw vertices" IsChecked="True"/>
+                    </StackPanel>
 
                     <Separator Name="Separator2" IsVisible="False"/>
                     <!-- Action Buttons -->
@@ -207,15 +213,39 @@
         </Grid>
 
         <!-- Status Bar -->
-        <Border Grid.Row="2" 
-                BorderBrush="#FFB140"
-                BorderThickness="2"
-                CornerRadius="4" 
-                Padding="10"
-                MaxHeight="100"
-                Margin="0,20,0,0">
-            <TextBlock Name="StatusText" TextWrapping="Wrap" Text="Ready" TextAlignment="Center" FontWeight="DemiBold"/>
-        </Border>
+<Border Grid.Row="2" 
+        BorderBrush="#FFB140"
+        BorderThickness="2"
+        CornerRadius="4" 
+        Padding="10"
+        MaxHeight="100"
+        Margin="0,20,0,0"
+        Background="Transparent">
+    <Button Name="StatusButton"
+            
+            Content="Ready"
+            IsEnabled="False"
+            Width="NaN"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            FontWeight="DemiBold"
+            Padding="6"
+            Cursor="Hand">
+        <Button.Template>
+            <ControlTemplate TargetType="Button">
+                <Border Background="Transparent"   
+                        Padding="{TemplateBinding Padding}">
+                    <ContentPresenter
+                        Content="{TemplateBinding Content}"
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                        TextBlock.Foreground="{TemplateBinding Foreground}"
+                        TextBlock.FontWeight="{TemplateBinding FontWeight}"/>
+                </Border>
+            </ControlTemplate>
+        </Button.Template>
+    </Button>
+</Border>
     </Grid>
    
 </Window>

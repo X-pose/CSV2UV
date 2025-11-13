@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls.PanAndZoom;
+using SkiaSharp;
+using System.Diagnostics;
 
 namespace UVMapConverter
 {
@@ -18,6 +20,8 @@ namespace UVMapConverter
         private Bitmap? _currentBitmap;
 
         private string? fileName;
+
+        private string? _lastSavedDirectory;
 
         public MainWindow()
         {
@@ -35,6 +39,8 @@ namespace UVMapConverter
             var sizeCombo = this.FindControl<ComboBox>("SizeComboBox");
             var bgCombo = this.FindControl<ComboBox>("BackgroundComboBox");
             var lineCombo = this.FindControl<ComboBox>("LineColorComboBox");
+            var drawVert = this.FindControl<CheckBox>("DrawVerticesCheckBox");
+            var statusBtn = this.FindControl<Button>("StatusButton");
 
             if (dropZone != null)
             {
@@ -72,6 +78,27 @@ namespace UVMapConverter
 
             if (lineCombo != null)
                 lineCombo.SelectionChanged += async (s, e) => { if (_currentUVData != null) await RegeneratePreview(); };
+            
+            if (drawVert != null)
+                drawVert.PropertyChanged += async (s, e) => { if ( e.Property.Name=="IsChecked" && _currentUVData != null) await RegeneratePreview(); };
+
+            if (statusBtn != null)
+            {
+                statusBtn.IsEnabled = false;
+                statusBtn.Click += (s, e) =>
+                {
+                    if (string.IsNullOrEmpty(_lastSavedDirectory)) return;
+                    try
+                    {
+                        // Open folder with default file manager (UseShellExecute=true uses the platform shell)
+                        Process.Start(new ProcessStartInfo { FileName = _lastSavedDirectory, UseShellExecute = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        UpdateStatus($"Failed to open folder: {ex.Message}", true);
+                    }
+                };
+            }
         }
 
         private void DragOver(object? sender, DragEventArgs e)
@@ -155,11 +182,12 @@ namespace UVMapConverter
             var size = GetSelectedSize();
             var bgColor = GetSelectedBackgroundColor();
             var lineColor = GetSelectedLineColor();
+            var drawVertices = IsDrawVerticesEnabled();
             var thickness = (int)(this.FindControl<Slider>("ThicknessSlider")?.Value ?? 2);
         
             var generator = new ImageGenerator();
             _currentBitmap = await Task.Run(() => 
-                generator.GenerateImage(_currentUVData, size, bgColor, lineColor, thickness));
+                generator.GenerateImage(_currentUVData, size, bgColor, lineColor, thickness, drawVertices));
 
             var previewImage = this.FindControl<Image>("PreviewImage");
             if (previewImage != null)
@@ -198,13 +226,24 @@ namespace UVMapConverter
             }
         }
 
+private SKBitmap ConvertAvaloniaBitmapToSKBitmap(Bitmap bmp)
+        {
+            using var ms = new MemoryStream();
+            bmp.Save(ms); // uses Avalonia's default encoder
+            ms.Seek(0, SeekOrigin.Begin);
+            var skBitmap = SKBitmap.Decode(ms);
+            if (skBitmap == null)
+                throw new InvalidOperationException("Failed to decode Avalonia Bitmap to SKBitmap.");
+            return skBitmap;
+        }
+
         private async void SaveButton_Click(object? sender, RoutedEventArgs e)
         {
             if (_currentBitmap == null) return;
 
             var format = GetSelectedFormat();
             var extension = format.ToLower();
-            
+
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = "Save UV Map Image",
@@ -215,45 +254,68 @@ namespace UVMapConverter
                 }
             });
 
-            if (file != null)
-            {
-                try
-                {
-                    UpdateStatus("Saving image...");
-                    await using var stream = await file.OpenWriteAsync();
-                    
-                    switch (extension)
-                    {
-                        case "png":
-                            _currentBitmap.Save(stream);
-                            break;
-                        case "jpg":
-                        case "jpeg":
-                            _currentBitmap.Save(stream);
-                            break;
-                        case "bmp":
-                            _currentBitmap.Save(stream);
-                            break;
-                        case "webp":
-                            _currentBitmap.Save(stream);
-                            break;
-                    }
+            if (file == null) return;
 
-                    UpdateStatus($"Image saved successfully to {Path.GetFileName(file.Path.LocalPath)}");
-                }
-                catch (Exception ex)
+            try
+            {
+                UpdateStatus("Saving image...");
+                await using var stream = await file.OpenWriteAsync();
+
+                using var skBitmap = ConvertAvaloniaBitmapToSKBitmap(_currentBitmap);
+                
+                var encFmt = extension switch
                 {
-                    UpdateStatus($"Error saving: {ex.Message}", true);
+                    "png" => SKEncodedImageFormat.Png,
+                    "jpg" or "jpeg" => SKEncodedImageFormat.Jpeg,
+                    "webp" => SKEncodedImageFormat.Webp,
+                    "bmp" => SKEncodedImageFormat.Bmp,
+                    _ => SKEncodedImageFormat.Png
+                };
+
+                int quality = encFmt == SKEncodedImageFormat.Jpeg ? 90 : 100;
+                SKData? data = null;
+
+                // Special handling for BMP - use Avalonia's encoder instead of SkiaSharp
+                if (encFmt == SKEncodedImageFormat.Bmp)
+                {
+                    // Save using Avalonia's BMP encoder which is more reliable
+                    _currentBitmap.Save(stream);
+                }
+                else
+                {
+                    // For other formats, use SkiaSharp
+                    using var skImage = SKImage.FromBitmap(skBitmap);
+                    data = skImage.Encode(encFmt, quality);
+
+                    if (data == null)
+                        throw new InvalidOperationException($"Failed to encode image as {encFmt}.");
+
+                    using (data)
+                        data.SaveTo(stream);
+                }
+
+                UpdateStatus($"Image saved successfully to {Path.GetFileName(file.Path.LocalPath)}");
+                _lastSavedDirectory = Path.GetDirectoryName(file.Path.LocalPath);
+                var statusBtn = this.FindControl<Button>("StatusButton");
+                if (statusBtn != null)
+                {
+                    await Task.Delay(1500); // Small delay to ensure UI updates
+                    statusBtn.IsEnabled = !string.IsNullOrEmpty(_lastSavedDirectory);
+                    statusBtn.Content = "Open folder";
                 }
             }
+            catch (Exception ex)
+            {
+                UpdateStatus($"Error saving: {ex.Message}", true);
+            }
         }
-
         private void ClearButton_Click(object? sender, RoutedEventArgs e)
         {
             _currentCsvPath = null;
             _currentUVData = null;
             _currentBitmap?.Dispose();
             _currentBitmap = null;
+            _lastSavedDirectory = null;
 
             var dropZoneContent = this.FindControl<StackPanel>("DropZoneContent");
             var previewScroller = this.FindControl<ScrollViewer>("PreviewScroller");
@@ -271,6 +333,11 @@ namespace UVMapConverter
                 
             if (zoomBorder != null)
                 zoomBorder.IsVisible = false;
+            if (this.FindControl<Button>("StatusButton") is Button statusBtn)
+            {
+                statusBtn.IsEnabled = false;
+                statusBtn.Content = "Ready";
+            }
 
            ShowActionPanel(false);
             UpdateStatus("Ready");
@@ -286,11 +353,11 @@ namespace UVMapConverter
 
         private void UpdateStatus(string message, bool isError = false)
         {
-            var statusText = this.FindControl<TextBlock>("StatusText");
-            if (statusText != null)
+            var statusBtn = this.FindControl<Button>("StatusButton");
+            if (statusBtn != null)
             {
-                statusText.Text = message;
-                statusText.Foreground = isError 
+                statusBtn.Content = message;
+                statusBtn.Foreground = isError 
                     ? Avalonia.Media.Brushes.Red 
                     : Avalonia.Media.Brushes.White;
             }
@@ -305,6 +372,7 @@ namespace UVMapConverter
                 1 => 1024,
                 2 => 2048,
                 3 => 4096,
+                4 => 8192,
                 _ => 2048
             };
         }
@@ -347,6 +415,12 @@ namespace UVMapConverter
                 3 => "webp",
                 _ => "png"
             };
+        }
+
+        private bool IsDrawVerticesEnabled()
+        {
+            var checkBox = this.FindControl<CheckBox>("DrawVerticesCheckBox");
+            return checkBox?.IsChecked ?? false;
         }
     }
 }

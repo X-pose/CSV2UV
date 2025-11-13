@@ -13,7 +13,8 @@ namespace UVMapConverter
             int outputSize,
             SKColor backgroundColor,
             SKColor lineColor,
-            int lineThickness)
+            int lineThickness,
+            bool drawVertices = true)
         {
             // Create Skia surface
             using var surface = SKSurface.Create(new SKImageInfo(outputSize, outputSize));
@@ -71,14 +72,17 @@ namespace UVMapConverter
                 }
             }
 
-            // Draw vertices on top for visibility
-            float pointSize = Math.Max(lineThickness * 1.2f, 2.5f);
-            foreach (var point in points)
+            if (drawVertices)
             {
-                var pixel = UVToPixel(point, outputSize);
-                canvas.DrawCircle(pixel.X, pixel.Y, pointSize, pointPaint);
+                // Draw vertices on top for visibility
+                float pointSize = Math.Max(lineThickness * 1.2f, 2.5f);
+                foreach (var point in points)
+                {
+                    var pixel = UVToPixel(point, outputSize);
+                    canvas.DrawCircle(pixel.X, pixel.Y, pointSize, pointPaint);
+                }
             }
-
+            
             // Convert to Avalonia Bitmap
             using var image = surface.Snapshot();
             using var data = image.Encode(SKEncodedImageFormat.Png, 100);
