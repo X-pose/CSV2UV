@@ -13,6 +13,13 @@ This project is based on and inspired by Ettenmure’s [dcs-uv-converter](https:
 - Selectable output image size. 
 - Selectable output format (PNG, BMP, JPG, WEBP).
 
+## v1.1.0  
+### Introduced a new set of features
+
+- 8192px export size is now supported.  
+- Drawing vertices is now optional.  
+- The export folder can now be opened directly after export.
+
 ## Prerequities
 - Windows (recommended) or any OS that can run .NET Core/.NET 8+ executables
 - [.Net 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
