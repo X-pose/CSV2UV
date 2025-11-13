@@ -44,11 +44,10 @@ If you downloaded CSV2UV.exe version, install the appropriate [.NET runtime](htt
 ![Adjust export settings.](Images/ConfigureSettings.png)
 ### Export Image
 ![Export image.](Images/Click2Export.png)
-## Note for Developers
-
 ### Demo
 ![Demo.](Images/Demo.gif)
 
+## Note for Developers
 - Language: C# (.NET Core / .NET 8+)
 
 ### How to Build Locally
